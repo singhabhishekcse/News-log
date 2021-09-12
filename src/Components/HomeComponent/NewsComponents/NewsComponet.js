@@ -1,27 +1,97 @@
 import React, { Component } from 'react'
 import NewsIteamComponent from './NewsIteamComponent'
+import Loader from './loderComponents/Loader'
+import PropTypes from 'prop-types';
 
 export class NewsComponet extends Component {
        
-      
+       static defaultProps = {
+           country : 'in',
+           pageSize : 9,
+       }
+       static propTypes ={
+        country : PropTypes.string,
+        pageSize : PropTypes.number,
+       }
+
+
+
        constructor(){
         super();
         
         this.state={
           articles : this.articles,
-          loading : false
+          loading : false,
+          page:1,
+        //   totalResults:this.totalResults,
         }
     }
-
+   
 
     articles = []
     async componentDidMount() {
-        let url = "https://newsapi.org/v2/top-headlines?country=in&apiKey=bf3cb7efd13348ff92adb1f0aba89817"
+        let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}us&apiKey=bf3cb7efd13348ff92adb1f0aba89817&page=1&pageSize=${this.props.pageSize}`
+        this.setState({loading:true})
+       
         let data = await fetch(url)
         let parseData = await data.json()
-        this.setState({articles : parseData.articles})
+        this.setState({
+            articles : parseData.articles,
+            totalResults : parseData.totalResults,
+            loading:false,
+
+        })
        
+        
+    //    console.log(parseData)
     } 
+
+
+
+     handlePrevBtn = async()=>{
+        
+       
+       
+                        let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}us&apiKey=bf3cb7efd13348ff92adb1f0aba89817&page=${this.state.page-1}&pageSize=${this.props.pageSize}`;
+                        this.setState({loading:true})
+                        let data = await fetch(url)
+                        let parseData = await data.json()
+                        this.setState({
+                            articles : parseData.articles,
+                            page:this.state.page - 1,
+                            loading:false,
+                        })
+                    
+    }
+    
+   
+
+
+
+     handleNextBtn = async()=>{
+        
+
+
+        /////this is not working in future i have to work here //////////
+
+
+
+        // if(!( this.state.page + 1 >   Math.ceil(this.parseData.totalResults/20))){
+            
+      
+                    let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}us&apiKey=bf3cb7efd13348ff92adb1f0aba89817&page=${this.state.page+1}&pageSize=${this.props.pageSize}`;
+                    this.setState({loading:true})
+                    let data = await fetch(url)
+                    let parseData = await data.json()
+                   
+                    this.setState({
+                        articles : parseData.articles,
+                        page:this.state.page + 1,
+                        loading:false,
+                    })
+                // }
+    }
+
 
 
 
@@ -32,9 +102,12 @@ export class NewsComponet extends Component {
         return (
             <> 
             <div className="container my-4">
-             <h1>NewsLog - Top Headling </h1>
+            <h1 className="text-centre">NewsLog - Top Headling</h1>
+                 
+                 {this.state.loading && <Loader />}
+         
              <div className="row my-4">
-             {this.state.articles.map((element)=>{
+             {!this.state.loading && this.state.articles.map((element)=>{
                   
                 return  (
                            <div className="col-md-4" key={element.url}>
@@ -47,32 +120,26 @@ export class NewsComponet extends Component {
                 <div className="d-flex justify-content-between ">
                     
                             
-                                <button disabled={this.state.page<=1}  className="sr-only bg-dark text-white" onClick={this.handlePrevBtn} >&laquo; Previous</button>
+                                <button disabled={this.state.page <= 1} type="button"  className=" btn btn-sm bg-dark text-white" onClick={this.handlePrevBtn} >&laquo; Previous</button>
                             
                       
                            
                       
-                                   <button className="sr-only bg-dark text-white"  onClick={this.handleNextBtn}>Next &raquo;</button>
+                                <button className="btn btn-sm bg-dark text-white" type="button"  onClick={this.handleNextBtn}>Next &raquo;</button>
                                 
                     
                 </div>
 
-
-
-
-
-
-
-
-
-
+            
 
 
 
             </div>
+            
             </>
         )
     }
+    
 }
 
 export default NewsComponet   
