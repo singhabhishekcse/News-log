@@ -38,6 +38,7 @@ export class NewsComponet extends Component {
        
         let data = await fetch(url)
         let parseData = await data.json()
+        console.log(parseData)
         this.setState({
             articles : parseData.articles,
             totalResults : parseData.totalResults,
@@ -114,7 +115,7 @@ export class NewsComponet extends Component {
                   
                 return  (
                            <div className="col-md-4" key={element.url}>
-                                <NewsIteamComponent title ={element.title ? element.title:" "} description={element.description? element.description:" "} imgUrl ={element.urlToImage} newsUrl={element.url}/>
+                                <NewsIteamComponent source={element.source.name} title ={element.title ? element.title:" "} description={element.description? element.description:" "} imgUrl ={element.urlToImage} newsUrl={element.url} author={element.author? "author":"Unknown"}  date={element.publishedAt}/>
                           </div>
                        )
              })}
